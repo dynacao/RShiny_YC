@@ -24,7 +24,7 @@ profiles_raw %>%
          job = ifelse(job == 'rather not say' | is.na(job), F, T),
          geo2 = str_trim(string = geo2, side = 'both'),
          last_online = ymd_hm(last_online),
-         days_offline = round(time_length(ymd_hm('2012-07-01-00-00')-last_online, unit='day'), 1),
+         days_offline = round(time_length(ymd_hm('2012-07-01-00-00',tz = 'PST')-last_online, unit='day'), 1),
          activeness = ifelse(days_offline <=3,'very active', 
                              ifelse(days_offline>30,'inactive','active')),
          offspring = ifelse(is.na(offspring), F, T),

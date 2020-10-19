@@ -1,9 +1,8 @@
+library(shiny)
 library(tidyverse)
 library(ggplot2)
 library(RColorBrewer)
-library(shiny)
 library(leaflet)
-library(plotly)
 library(DT)
 
 okc <- read_csv('clean_data_okc_YC.csv')
@@ -21,10 +20,6 @@ map_tooltip <- paste(
   "# of Profiles: ", okc_map$n_profiles, "<br/>") %>%
   lapply(htmltools::HTML)
 
-
-# create demographic dropdown options
-dem_options <- c('age', 'sex', 'status', 'orientation')
-
 # prepare question table
 okc %>%
   summarise(bodytype = mean(body_type), diet = mean(diet), drinks = mean(drugs),
@@ -35,26 +30,10 @@ okc %>%
   pivot_longer(col=c(bodytype:langs), names_to = 'question', values_to = 'percentage') %>%
   arrange(desc(percentage)) -> okc_ques_compl
 
-okc_dt %>%
-  group_by(sex) %>%
-  summarise(mean(total_answs))
-
-summary(aov(okc_dt$total_answs ~ okc_dt$age))[[1]] -> anova_table
-
-summary(aov(okc_dt$days_offline ~ okc_dt$age))
-
-
-okc_dt %>%
-  group_by(age) %>%
-  summarise(avg_days = mean(days_offline)) %>%
-  ggplot(aes(x=age, y=avg_days)) + geom_col()
-
-
 # prepare data table
 okc %>% select(ID, age_raw, age, sex, status, orientation, geo1, 
                last_online, days_offline, activeness, ess_answs, total_answs) %>%
   mutate(geo1 = str_to_title(geo1))-> okc_dt
-
 
 # create text block for the about data tab
 about_data <- HTML(paste(
@@ -64,7 +43,7 @@ about_data <- HTML(paste(
   "Source: Data scraped from public profiles on www.okcupid.com on 06/30/2012. Permission to use this data was obtained from OkCupid president and co-founder Christian Rudder under the condition that the dataset remains public.","<br/>",
   "Essential Questions: age, sex, status, orientation","<br/>",
   "Multiple-Choice Questions (Optional): body type, diet, drinks, drugs, education, ethinicity, height, income, job, offspring, pets, religion, sign, smokes, speaks" ,"<br/>",
-  "Short-Answer Questions (Optional): to be filled","<br/>",
+  "Short-Answer Questions (Optional): 0. My self summary/ 1. What I'm doing with my life/ 2. I'm really good at/ 3. The first thing people usually notice about me/ 4 Favorite books, movies, show, music, and food/ 5. The six things I could never do without/ 6. I spend a lot of time thinking about/ 7. On a typical Friday night I am/ 8.The most private thing I am willing to admit/ 9. You should message me if...","<br/>",
   "Detailed informatin about the data can be found here: https://github.com/rudeboybert/JSE_OkCupid","<br/>",
   sep = '<br/>')
 )
